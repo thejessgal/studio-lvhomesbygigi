@@ -28,6 +28,10 @@ the schema shipped in the same commit.
   `teamMember-seed-{jessica,gigi}`) with abstract monogram placeholder headshots
   (`assets/headshot-{jessica,gigi}.svg`) — deliberately not stock photos of real people.
 - 5 `testimonial` docs (readable seed IDs), spanning owner/tenant/google sources, 3 featured.
+- `homePage-en` + `homePage-es` (document-level localized singleton, per ADR 0002) plus the
+  `translation.metadata` link document (`_id: "translation-metadata-homePage"`) connecting
+  them. Each references 3 seeded `listing`s and the 3 featured `testimonial`s. Hero image
+  reuses `assets/exterior-modern-01.jpg`.
 
 ## Consuming this seed
 
@@ -72,3 +76,6 @@ Flagged in `<scratchpad>/team/placeholders.md`:
   seeded email (`gigi@lasvegashomesbygigi.com`) is a plausible placeholder, not confirmed —
   the brief only specified Jessica's real email. All 5 `testimonial` quotes/attributions are
   entirely fabricated placeholder content, not real customer feedback.
+- `homePage-{en,es}` hero/owner-section/service-area-teaser copy is placeholder luxury-toned
+  marketing text (ES is a real translation, not machine-adjacent filler) — real homepage copy
+  is a PRD §22 content TODO. Hero image is a reused stock photo, not a real property photo.
