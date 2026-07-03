@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), `recentSale` + `serviceArea.managedAreas` (studio#5), rental-application PDFs + `payRentDetails` on `siteSettings` (studio#6), and `teamMember` + `testimonial` (studio#7) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
+**Status:** content model complete for v1 — see "Content model — complete for v1" at the end of this doc. `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), `recentSale` + `serviceArea.managedAreas` (studio#5), rental-application PDFs + `payRentDetails` on `siteSettings` (studio#6), `teamMember` + `testimonial` (studio#7), and `homePage` (studio#8) all built + seeded. The bootstrap `post` type is gone.
 
 ## Conventions
 
@@ -19,7 +19,7 @@ Shared template; `kind: 'rental' | 'sale'`.
 
 | Field | Type | Notes |
 |---|---|---|
-| kind | string (rental/sale) | drives status options; agent lane + index page arrive with teamMember (studio#7) |
+| kind | string (rental/sale) | drives status options + index page. Listing agent is **not** a field on `listing` — `teamMember.lane` ('pm' for rentals, 'sales' for sales) is looked up at query time by matching `kind`, same join-by-value pattern as `teamMember`↔`siteSettings.licenses[]` (no reference field needed while there's exactly one PM + one sales agent) |
 | title / slug | string / slug | |
 | address | object | street, **neighborhood** (added — see decision below), city, zip |
 | showNeighborhoodOnly | boolean | render neighborhood + zip instead of street (owner discretion); validated to require `address.neighborhood` be set |
@@ -112,8 +112,58 @@ Fixed `_id: "siteSettings"`, pinned in Structure (no create-new path). Fields, g
 
 Seeded in `../studio-lvhomesbygigi/seed/seed.ndjson` per ADR 0004. i18n foundation (locales `en`+`es`) lives in `sanity.config.ts`: `sanity-plugin-internationalized-array` (field-level: `internationalizedArrayString`/`Text`/`SimpleBlockContent` — the last backed by the `simpleBlockContent` type in `schemaTypes/objects/simpleBlockContent.ts`) + `@sanity/document-internationalization` (document-level, currently wired to `['homePage']`).
 
-### homepage / featured (singleton) — PRD §5 — **stub only, studio#8 builds it out**
-Curated featured rentals/sales · hero configuration · owner-section content. A minimal `homePage` type (`title` + hidden `language`) exists today (`schemaTypes/homePage.ts`) solely so `@sanity/document-internationalization`'s `schemaTypes` option — which requires at least one real type — has something to target. studio#8 extends this file in place (don't replace it) and adds the localized-singleton structure entry (`homePage-en` / `homePage-es`).
+### homePage (document-level localized singleton) — PRD §5 — **built + seeded, studio#8**
+Two documents, `homePage-en` + `homePage-es`, linked through a `translation.metadata` doc
+(`@sanity/document-internationalization`, per ADR 0002) — **not** field-level localization:
+each document IS one locale, so every content field below is a plain type
+(`string`/`text`/`image`), never `internationalizedArray*`. Originated as a minimal stub in
+studio#2 (`title` + hidden `language`) purely so the plugin's `schemaTypes` option — which
+throws on an empty array — had a real type to target; extended in place here, per that file's
+own instruction, so the `homePage-en`/`homePage-es` IDs and plugin wiring stayed stable across
+slices.
+
+| Field | Type | Notes |
+|---|---|---|
+| language | string, hidden, readOnly | set by the per-locale initial-value template, never edited directly |
+| title | string | editor-facing only, not rendered |
+| hero | object | `{headline, subhead, image (alt required), ctaLabel, ctaTarget}` — `ctaTarget` is a locale-agnostic relative path (e.g. `/owners/pricing`); the site prepends the locale prefix via `getRelativeLocaleUrl` (ADR 0002), so the same value is correct in both `homePage-en` and `homePage-es` |
+| ownerSection | object | `{heading, body, wizardCtaLabel}` — the block that leads owners toward `/owners/pricing` |
+| featuredListings | array(reference → `listing`) | curated, validated 2–4, unique |
+| featuredTestimonials | array(reference → `testimonial`) | curated, validated ≥1, unique |
+| serviceAreaTeaser | object | `{heading, body}` — short copy pointing to the full service-area map |
+
+Structure: pinned as a **localized singleton** (`structure/index.ts`'s
+`createLocalizedSingleton` helper) — one "Home Page" list item expands to "Home Page
+(English)" / "Home Page (Español)", each opening its fixed `homePage-<locale>` document.
+`sanity.config.ts` registers a `homePage-en`/`homePage-es` initial-value template per locale
+and filters both (plus Sanity's default `homePage` template) out of the global "+ New
+document" menu — there is no path to create a stray `homePage` document anywhere, matching
+`siteSettings`/`serviceArea`. Seeded `translation.metadata` doc links the two by reference
+(`internationalizedArrayReference`, the plugin's own internal type — not something to hand-
+author elsewhere).
+
+### Owners-pages content decision (`/owners`, `/owners/why-us`, `/owners/faq`) — studio#8
+**Code-managed in the site repo for v1** (MDX/static, same pattern as the site's other
+stub pages), not CMS page documents. Rationale: the real copy for these pages is a PRD §22
+human content TODO regardless of where it's modeled, so modeling them in Sanity now buys
+nothing today; it would add 6 more document-level-localized page documents (3 pages × 2
+locales) to maintain before there's real content to put in them; and migrating static
+MDX → CMS-driven pages later is a clean, well-understood v2 step (add the schema, one-time
+content migration) rather than a risky one. If a future slice needs more editor control over
+these specific pages, revisit then — this isn't a permanent architectural commitment, just
+the right amount of investment for where the content actually stands today.
 
 ## Not modeled in v1 (PRD §21)
 No Buildium sync · no MLS/IDX · no online applications/payments · no auth portals · no live reviews widget. Listings are entered manually (~10 min each).
+
+## Content model — complete for v1
+
+Every document type named in this spec is now built and seeded (studio#2 through studio#8):
+`siteSettings`, `serviceArea`, `pricingSheet`, `listing`, `recentSale`, `teamMember`,
+`testimonial`, `homePage`. The two schema-design patterns worth carrying into any future
+addition: (1) **field-level vs document-level i18n** — `internationalizedArray*` for
+structured "things" reused across many documents, a separate document per locale for
+presentation pages (ADR 0002); (2) **stable enum vs localized label** — when a field's raw
+value needs to stay a fixed, code-comparable string (`licenseType`, `lane`), pair it with a
+second, purely-cosmetic localized field for what actually renders (`licenseTypeLabel`,
+`teamMember.role`) rather than localizing the enum itself.

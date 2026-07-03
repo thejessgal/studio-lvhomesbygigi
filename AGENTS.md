@@ -48,11 +48,11 @@ schemaTypes/
   recentSale.ts          # sold gallery — address-precise map pins
   teamMember.ts          # Jessica/Gigi — licenses joined from siteSettings.licenses[] by name, not duplicated
   testimonial.ts         # curated quotes — owner/tenant/google, manual featured + order
-  homePage.ts            # stub — real fields land in studio#8; see file header before extending
+  homePage.ts            # document-level localized singleton — homePage-en/homePage-es
   objects/
     simpleBlockContent.ts  # Portable Text variant registered with the i18n plugin
 structure/
-  index.ts               # Structure resolver — pins siteSettings + serviceArea as singletons
+  index.ts               # Structure resolver — pins siteSettings/serviceArea as singletons + homePage as a localized singleton
 scripts/
   generate-placeholder-pdfs.ts  # regenerates the 12 seed/assets/*.pdf pricing-sheet placeholders
   generate-rental-application-pdfs.ts  # regenerates the 2 seed/assets/rental-application-*.pdf placeholders
@@ -60,18 +60,21 @@ scripts/
 
 Define each document/object type with `defineType` + `defineField`, export it from its own file, and register it in `index.ts`. i18n plugins (`sanity-plugin-internationalized-array`, `@sanity/document-internationalization`) are configured in `sanity.config.ts` per ADR 0002.
 
-**Current state:** the bootstrap `post` type is gone. `siteSettings` + the i18n foundation (studio#2) and `serviceArea` + `pricingSheet` (studio#3) are built and seeded. The rest of the content model (see [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)) lands in later slices.
+**Current state:** the bootstrap `post` type is gone. The full v1 content model is built and
+seeded (studio#2 through studio#8) — `siteSettings`, `serviceArea`, `pricingSheet`, `listing`,
+`recentSale`, `teamMember`, `testimonial`, `homePage`. Full spec + build history:
+[docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md).
 
-## Content model to build (summary — full spec in [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md))
+## Content model (summary — full spec + field tables in [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md))
 
-- **listing** — rentals + for-sale (shared template, `kind` field): address w/ "neighborhood only" toggle, beds/baths/sqft, price, status, furnished, **bilingual** description + neighborhood notes, ≤30 photos + hero (alt text), video/tour/floorplan URLs, area infographics, geo coordinates.
+- **listing** — rentals + for-sale (shared template, `kind` field): address w/ "neighborhood only" toggle, beds/baths/sqft, price, status, furnished, **bilingual** description + neighborhood notes, ≤30 photos + explicit hero flag (alt text), video/tour/floorplan URLs, area infographics, geo coordinates.
 - **recentSale** — sold gallery: hero, address-or-neighborhood, optional sold price, sold date, note. (Renders as *specific* map pins.)
-- **serviceArea** — single source of truth: zip list + named regions. Consumed by wizard, map, and copy.
+- **serviceArea** — single source of truth: zip list + named regions + managed-area map-shading zips. Consumed by wizard, map, and copy.
 - **pricingSheet** — one per `(propertyType, furnished, language)` → 12 PDFs total. `furnished` selects the PDF, it is *not* a qualification input.
-- **teamMember** — Jessica, Gigi: bilingual bio, headshot, license numbers, contact, lane.
+- **teamMember** — Jessica, Gigi: bilingual bio, headshot, license numbers (joined from `siteSettings.licenses[]`, not duplicated), contact, lane.
 - **testimonial** — curated quotes (owner/tenant/Google), manual.
-- **siteSettings** (singleton) — footer disclosures, license numbers, phones, address/hours, social, Buildium portal links.
-- **homepage / featured** (singleton) — curated featured listings/sales + owner-section content.
+- **siteSettings** (singleton) — footer disclosures, license numbers, phones, address/hours, social, Buildium portal links, rental application PDFs, pay-rent details.
+- **homePage** (document-level localized singleton, `homePage-en`/`homePage-es`) — hero, owner-section content, curated featured listings/testimonials, service-area teaser.
 
 ## Content-model rules (load-bearing)
 
