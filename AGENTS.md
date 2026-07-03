@@ -44,6 +44,7 @@ schemaTypes/
   siteSettings.ts        # singleton — compliance footer, contact, licenses, portals
   serviceArea.ts         # singleton — zip list + named regions (single source of truth)
   pricingSheet.ts        # 12 docs — propertyType × furnished × language
+  listing.ts             # rentals + for-sale shared template
   homePage.ts            # stub — real fields land in studio#8; see file header before extending
   objects/
     simpleBlockContent.ts  # Portable Text variant registered with the i18n plugin

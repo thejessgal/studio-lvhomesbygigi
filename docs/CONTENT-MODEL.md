@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** `siteSettings` + i18n foundation (studio#2) and `serviceArea` + `pricingSheet` (studio#3) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
+**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), and `listing` (studio#4) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
 
 ## Conventions
 
@@ -14,27 +14,38 @@ Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CO
 
 ## Document types
 
-### listing (rentals + for-sale) — PRD §6, §7
+### listing (rentals + for-sale) — PRD §6, §7 — **built + seeded, studio#4**
 Shared template; `kind: 'rental' | 'sale'`.
 
 | Field | Type | Notes |
 |---|---|---|
-| kind | string (rental/sale) | drives status options, agent, and index page |
+| kind | string (rental/sale) | drives status options; agent lane + index page arrive with teamMember (studio#7) |
 | title / slug | string / slug | |
-| address | object | street, city, zip |
-| showNeighborhoodOnly | boolean | render neighborhood + zip instead of street (owner discretion) |
-| beds / baths / sqft | number | |
+| address | object | street, **neighborhood** (added — see decision below), city, zip |
+| showNeighborhoodOnly | boolean | render neighborhood + zip instead of street (owner discretion); validated to require `address.neighborhood` be set |
+| beds / baths / sqft | number | all required |
 | price | number | monthly rent (rental) or sale price (sale) |
-| status | string | rental: available/pending/rented · sale: active/pending/sold |
-| furnished | boolean | rentals primarily |
-| descriptionEn / descriptionEs | portable text | bilingual |
-| neighborhoodNotesEn / …Es | text | bilingual "about the area" |
-| photos | array(image) | up to 30, alt text required; one designated hero |
+| status | string | rental: available/pending/rented · sale: active/pending/sold — one shared field; cross-field validation rejects a mismatched kind/status pair (e.g. a sale with status "rented") |
+| furnished | boolean | rentals primarily, but modeled on both kinds |
+| description | `internationalizedArraySimpleBlockContent` | **localized EN/ES** Portable Text (a `Xen`/`Xes` pair per the convention above) |
+| neighborhoodNotes | `internationalizedArrayText` | **localized EN/ES** "about the area" copy |
+| photos | array(image, max 30) | alt text required per photo; one explicit `isHero` flag (not array order — see decision below); validation enforces the cap and exactly one hero |
 | videoUrl | url | YouTube/Vimeo, optional |
-| tourUrl | url | Matterport/3D, optional — only renders if set |
-| floorPlan | image | optional |
-| areaInfographics | array(image) | optional |
-| coordinates | geopoint | geocoded from address on save |
+| tourUrl | url | Matterport/3D, optional — the site only renders a tour block if this is set |
+| floorPlan | image | optional, alt text required |
+| areaInfographics | array(image) | optional, alt text required per image |
+| coordinates | geopoint | **manual entry in v1** — see decision below |
+
+**Decisions made while building this type:**
+- **Hero photo = explicit flag, not "first item."** Array order isn't a stable editorial
+  signal in Sanity Studio (drag-to-reorder), so `photos[].isHero` (boolean) marks the hero;
+  validation requires exactly one `true`. Documented in `schemaTypes/listing.ts`'s header.
+- **`address.neighborhood` added** (not in the original table) — needed so
+  `showNeighborhoodOnly` has something to actually render besides `city`+`zip`; validation
+  requires it be set before the toggle can be turned on.
+- **Geocoding is manual-entry only in v1.** Auto-geocode-on-save (e.g. a Sanity Function
+  hitting a geocoding API on publish) is a real nice-to-have but no such automation exists —
+  deferred, not built.
 
 ### recentSale (sold gallery / credibility wall) — PRD §7, §8
 `hero` image · `addressOrNeighborhood` (editor discretion per entry) · `soldPrice` (optional) · `soldDate` · `noteEn` / `noteEs` (optional). Renders as **specific** pins on the Portfolio Map (closed transactions are public record).
