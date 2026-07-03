@@ -1,2 +1,5 @@
-import {postType} from './postType'
-export const schemaTypes = [postType]
+import {homePageType} from './homePage'
+import {simpleBlockContentType} from './objects/simpleBlockContent'
+import {siteSettingsType} from './siteSettings'
+
+export const schemaTypes = [siteSettingsType, homePageType, simpleBlockContentType]
