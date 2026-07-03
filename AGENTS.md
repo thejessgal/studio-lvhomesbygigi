@@ -46,6 +46,8 @@ schemaTypes/
   pricingSheet.ts        # 12 docs — propertyType × furnished × language
   listing.ts             # rentals + for-sale shared template
   recentSale.ts          # sold gallery — address-precise map pins
+  teamMember.ts          # Jessica/Gigi — licenses joined from siteSettings.licenses[] by name, not duplicated
+  testimonial.ts         # curated quotes — owner/tenant/google, manual featured + order
   homePage.ts            # stub — real fields land in studio#8; see file header before extending
   objects/
     simpleBlockContent.ts  # Portable Text variant registered with the i18n plugin

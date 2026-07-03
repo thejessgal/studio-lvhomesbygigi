@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), `recentSale` + `serviceArea.managedAreas` (studio#5), and rental-application PDFs + `payRentDetails` on `siteSettings` (studio#6) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
+**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), `recentSale` + `serviceArea.managedAreas` (studio#5), rental-application PDFs + `payRentDetails` on `siteSettings` (studio#6), and `teamMember` + `testimonial` (studio#7) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
 
 ## Conventions
 
@@ -50,9 +50,9 @@ Shared template; `kind: 'rental' | 'sale'`.
 ### recentSale (sold gallery / credibility wall) — PRD §7, §8 — **built + seeded, studio#5**
 `hero` image (alt required) · `addressOrNeighborhood` (one display string, editor discretion per entry) · `soldPrice` (optional) · `soldDate` (required) · `note` (`internationalizedArrayText`, **localized EN/ES**, optional) · `coordinates` (geopoint, **required** — unlike `listing`, sold pins are address-precise by design since closed transactions are public record, PRD §8). Renders as **specific** pins on the Portfolio Map.
 
-### serviceArea (single source of truth) — PRD §5, §14, CONTEXT.md — **built + seeded, studio#3**
-Fixed `_id: "serviceArea"`, pinned in Structure. Two **independent** lists (deliberately not
-foreign-keyed — see below):
+### serviceArea (single source of truth) — PRD §5, §14, CONTEXT.md — **built + seeded, studio#3, extended studio#5**
+Fixed `_id: "serviceArea"`, pinned in Structure. Three **independent** lists (deliberately not
+foreign-keyed to each other — see below):
 
 | Field | Type | Notes |
 |---|---|---|
@@ -81,11 +81,13 @@ new" path with a random `_id`. All 12 placeholder PDFs are real, selectable text
 by `scripts/generate-placeholder-pdfs.ts`, committed) — not scanned images — with a visible
 PLACEHOLDER banner; real pricing content is a launch-content TODO.
 
-### teamMember — PRD §3, §13
-`name` · `role` · `headshot` (alt text) · `bioEn` / `bioEs` · `licenseNumbers` · `phone` / `email` · `lane` (PM vs sales — drives listing agent + lead routing).
+### teamMember — PRD §3, §13 — **built + seeded, studio#7**
+`name` · `role` (`internationalizedArrayString`, **localized EN/ES**, the public-facing title) · `lane` ('pm'\|'sales', stable non-localized enum — drives listing agent display + lead routing, never rendered directly; same split pattern as `siteSettings.licenses[].licenseType`/`licenseTypeLabel`) · `headshot` (image, alt required) · `bio` (`internationalizedArrayText`, **localized EN/ES**) · `phone` / `email` · `order` (manual, number).
 
-### testimonial — PRD §18
-`quoteEn` / `quoteEs` · `attribution` · `source` (owner/tenant/google) · `featured` (bool). Manual curation; no live reviews widget in v1.
+**License numbers are NOT duplicated here.** `siteSettings.licenses[]` stays the one source of truth (already built in studio#2/#5, already consumed by the compliance footer) — the site joins a `teamMember` to their license(s) at query time by matching `siteSettings.licenses[].personName == teamMember.name` (GROQ: `*[_type=="siteSettings"][0].licenses[personName == ^.name]`). Seeded `teamMember.name` values (`Jessica`, `Gigi`) match their `personName` counterparts exactly.
+
+### testimonial — PRD §18 — **built + seeded, studio#7**
+`quote` (`internationalizedArrayText`, **localized EN/ES**) · `attribution` · `source` (owner/tenant/google) · `featured` (bool) · `order` (manual, number). Manual curation; no live reviews widget in v1.
 
 ### siteSettings (singleton) — PRD §13, §15, §17 — **built, studio#2**
 Fixed `_id: "siteSettings"`, pinned in Structure (no create-new path). Fields, grouped in the Studio:
