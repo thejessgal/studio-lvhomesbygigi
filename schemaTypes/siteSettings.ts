@@ -13,6 +13,14 @@ import {defineField, defineType} from 'sanity'
  * (internationalizedArrayString) is the actual public-facing text; render that, never
  * `licenseType` directly, on any user-visible surface (QA finding from slice 1 — the footer
  * was printing the English enum untranslated on the ES site).
+ *
+ * Rental application PDFs + pay-rent details (studio#6) live here rather than in a
+ * dedicated `tenantResources` doc — there's only ever one of each (a true singleton concern,
+ * same as everything else in this file), and Jessica already knows to look in Site Settings
+ * for "things that apply everywhere." Two named file fields (`rentalApplicationPdfEn`/`Es`)
+ * rather than a localized-file abstraction — `sanity-plugin-internationalized-array` doesn't
+ * register `file` as a field type, and two obviously-named fields are simpler for a
+ * non-technical editor than an array-based localization UI for just two languages.
  */
 export const siteSettingsType = defineType({
   name: 'siteSettings',
@@ -23,6 +31,7 @@ export const siteSettingsType = defineType({
     {name: 'contact', title: 'Contact'},
     {name: 'compliance', title: 'Compliance & Footer'},
     {name: 'social', title: 'Social & Portals'},
+    {name: 'tenantResources', title: 'Tenant Resources'},
   ],
   fields: [
     defineField({
@@ -187,6 +196,90 @@ export const siteSettingsType = defineType({
       description: 'PLACEHOLDER — replace with the real Buildium tenant-portal login URL before publish.',
       group: 'social',
       validation: (rule) => rule.required().uri({scheme: ['https']}),
+    }),
+    defineField({
+      name: 'rentalApplicationPdfEn',
+      title: 'Rental application PDF (English)',
+      type: 'file',
+      group: 'tenantResources',
+      description:
+        'CMS-uploadable — Jessica can replace the application without a deploy. Text-based/selectable PDF, not a scanned image (WCAG 2.1 AA).',
+      options: {accept: 'application/pdf'},
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'rentalApplicationPdfEs',
+      title: 'Rental application PDF (Spanish)',
+      type: 'file',
+      group: 'tenantResources',
+      description: 'Spanish translation of the rental application. Text-based/selectable PDF.',
+      options: {accept: 'application/pdf'},
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'payRentDetails',
+      title: 'Pay Rent Details',
+      type: 'object',
+      group: 'tenantResources',
+      description: 'Structured so the site can render each field individually (not one text blob).',
+      fields: [
+        defineField({
+          name: 'zelleHandle',
+          title: 'Zelle handle',
+          type: 'string',
+          description: 'PLACEHOLDER — real Zelle handle is a PRD §25 open item.',
+          validation: (rule) => rule.required(),
+        }),
+        defineField({
+          name: 'checkPayee',
+          title: 'Check payee (make checks payable to)',
+          type: 'string',
+          validation: (rule) => rule.required(),
+        }),
+        defineField({
+          name: 'checkMailingAddress',
+          title: 'Check mailing address',
+          type: 'object',
+          description:
+            'PLACEHOLDER — currently mirrors the office address as a stand-in. Real check-mailing address (may differ, e.g. a PO box) is a PRD §25 open item.',
+          fields: [
+            defineField({name: 'street', title: 'Street', type: 'string', validation: (rule) => rule.required()}),
+            defineField({name: 'suite', title: 'Suite / unit', type: 'string'}),
+            defineField({name: 'city', title: 'City', type: 'string', validation: (rule) => rule.required()}),
+            defineField({name: 'state', title: 'State', type: 'string', initialValue: 'NV', validation: (rule) => rule.required()}),
+            defineField({name: 'zip', title: 'ZIP', type: 'string', validation: (rule) => rule.required()}),
+          ],
+          validation: (rule) => rule.required(),
+        }),
+        defineField({
+          name: 'dueDay',
+          title: 'Rent due day of month',
+          type: 'number',
+          initialValue: 1,
+          validation: (rule) => rule.required().min(1).max(28),
+        }),
+        defineField({
+          name: 'gracePeriodDays',
+          title: 'Grace period (days)',
+          type: 'number',
+          validation: (rule) => rule.required().min(0),
+        }),
+        defineField({
+          name: 'lateFeePolicy',
+          title: 'Late fee policy',
+          type: 'internationalizedArrayText',
+          description: 'Plain-language late-fee policy copy shown to tenants. Localized EN/ES.',
+          validation: (rule) => rule.required(),
+        }),
+      ],
+      preview: {
+        select: {zelle: 'zelleHandle', dueDay: 'dueDay'},
+        prepare: ({zelle, dueDay}) => ({
+          title: 'Pay Rent Details',
+          subtitle: `Due day ${dueDay ?? '?'} · Zelle ${zelle ?? 'unset'}`,
+        }),
+      },
+      validation: (rule) => rule.required(),
     }),
   ],
   preview: {
