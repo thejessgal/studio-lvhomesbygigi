@@ -14,10 +14,11 @@ const STATUS_OPTIONS = [
 
 /**
  * Shared rental + for-sale template (PRD §6, §7). `kind` drives which `status` values are
- * valid, and — once teamMember lands (studio#7) — which agent lane and index page a listing
- * belongs to.
+ * valid and the index page; the listing agent is looked up at query time by matching
+ * `kind` to `teamMember.lane` ('pm' for rentals, 'sales' for sales) — not a reference field
+ * here, since there's exactly one PM and one sales agent (see docs/CONTENT-MODEL.md).
  *
- * Two schema decisions worth documenting (also in docs/CONTENT-MODEL.md):
+ * Three schema decisions worth documenting (also in docs/CONTENT-MODEL.md):
  * - **Hero photo:** an explicit `isHero` boolean per photo, not "first item in the array."
  *   Array order is not a stable signal in Sanity Studio (drag-to-reorder, and array items
  *   don't guarantee stable positional semantics the way a dedicated flag does) — an explicit
@@ -25,7 +26,22 @@ const STATUS_OPTIONS = [
  * - **Geocoding:** `coordinates` is manual-entry only in v1. Auto-geocode-on-save (e.g. via a
  *   Sanity Function hitting a geocoding API on document publish) is a nice-to-have deferred
  *   to a later slice — no such automation exists yet.
+ * - **Slug/street privacy guardrail:** `slug`'s validation warns (doesn't block) if a
+ *   `showNeighborhoodOnly` listing's slug appears to contain a word from its street address —
+ *   a real leak the site caught in seed data (a distinctive street name ended up in a URL
+ *   even though the street itself never rendered). The check is heuristic word-matching, not
+ *   a hard guarantee; treat the warning as a prompt to double-check, not a blocker.
  */
+const STREET_SUFFIXES = new Set([
+  'court', 'ct', 'street', 'st', 'avenue', 'ave', 'drive', 'dr', 'road', 'rd', 'way', 'lane', 'ln',
+])
+
+function streetTokens(street: string): string[] {
+  return street
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((word) => !/^\d+$/.test(word) && !STREET_SUFFIXES.has(word))
+}
 export const listingType = defineType({
   name: 'listing',
   title: 'Listing',
@@ -58,8 +74,27 @@ export const listingType = defineType({
       title: 'Slug',
       type: 'slug',
       group: 'core',
+      description:
+        'If "Show neighborhood only" is on, double-check the slug doesn\'t contain a word ' +
+        'from the street address — it renders in the page URL even though the street itself ' +
+        'never does.',
       options: {source: 'title'},
-      validation: (rule) => rule.required(),
+      validation: (rule) =>
+        rule
+          .required()
+          .custom((slug, context) => {
+            const doc = context.document as
+              | {showNeighborhoodOnly?: boolean; address?: {street?: string}}
+              | undefined
+            if (!doc?.showNeighborhoodOnly || !doc.address?.street || !slug?.current) return true
+            const leaked = streetTokens(doc.address.street).find((token) =>
+              slug.current!.toLowerCase().includes(token),
+            )
+            return leaked
+              ? `Slug may leak the street address ("${leaked}") — this listing has "Show neighborhood only" on.`
+              : true
+          })
+          .warning(),
     }),
     defineField({
       name: 'address',
