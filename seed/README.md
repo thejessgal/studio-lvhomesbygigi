@@ -16,6 +16,9 @@ the schema shipped in the same commit.
   — ordinary listings get Sanity-generated IDs once created for real; these fixed IDs are a
   seed-only convenience) with placeholder photos in `assets/*.jpg` + one shared
   `assets/floorplan-3br-2ba.svg`.
+- 5 `recentSale` docs (readable seed IDs, same convention as `listing`), sold dates spread
+  over the last ~18 months, mixing address-style and neighborhood-only display strings and
+  with/without `soldPrice`/`note` to exercise genuine field absence.
 
 ## Consuming this seed
 
@@ -45,3 +48,7 @@ Flagged in `<scratchpad>/team/placeholders.md`:
   content (real free-license stock photos, though — not gray boxes). The
   `tourUrl` on the Rainbow Ridge listing is a placeholder Matterport-style URL; its
   `videoUrl` is a real, currently-public YouTube house-tour video used only as a stand-in.
+- All 5 `recentSale` addresses, prices, and dates are invented placeholder content (real
+  stock photos, reused from the `listing` set). `serviceArea.managedAreas`' two extra ZIPs
+  (89129, 89131) are illustrative "legacy managed property" examples, not confirmed real
+  currently-managed ZIPs — flagged for Jessica/Gigi to confirm the actual list.
