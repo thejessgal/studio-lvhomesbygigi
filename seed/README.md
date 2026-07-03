@@ -24,6 +24,10 @@ the schema shipped in the same commit.
   `bun run scripts/generate-rental-application-pdfs.ts`.
 - `siteSettings.payRentDetails` — Zelle handle, check payee/mailing address, due day, grace
   period, and localized (EN/ES) late-fee policy copy.
+- 2 `teamMember` docs (Jessica — pm lane, Gigi — sales lane, readable seed IDs
+  `teamMember-seed-{jessica,gigi}`) with abstract monogram placeholder headshots
+  (`assets/headshot-{jessica,gigi}.svg`) — deliberately not stock photos of real people.
+- 5 `testimonial` docs (readable seed IDs), spanning owner/tenant/google sources, 3 featured.
 
 ## Consuming this seed
 
@@ -62,3 +66,9 @@ Flagged in `<scratchpad>/team/placeholders.md`:
   stand-in — the real check-mailing address may differ (e.g. a PO box) and needs
   confirmation. Both rental-application PDFs are placeholder content, same standards as the
   pricing sheets (real, selectable text — not the final application).
+- Jessica/Gigi's `teamMember.bio` text is invented placeholder copy (real bios are a PRD §22
+  content TODO). Headshots are abstract monogram SVGs, not real photos, per the brief's
+  explicit instruction not to use stock photos of real people as team members. `Gigi`'s
+  seeded email (`gigi@lasvegashomesbygigi.com`) is a plausible placeholder, not confirmed —
+  the brief only specified Jessica's real email. All 5 `testimonial` quotes/attributions are
+  entirely fabricated placeholder content, not real customer feedback.
