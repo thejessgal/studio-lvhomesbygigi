@@ -1,4 +1,5 @@
 import {homePageType} from './homePage'
+import {listingType} from './listing'
 import {simpleBlockContentType} from './objects/simpleBlockContent'
 import {pricingSheetType} from './pricingSheet'
 import {serviceAreaType} from './serviceArea'
@@ -8,6 +9,7 @@ export const schemaTypes = [
   siteSettingsType,
   serviceAreaType,
   pricingSheetType,
+  listingType,
   homePageType,
   simpleBlockContentType,
 ]
