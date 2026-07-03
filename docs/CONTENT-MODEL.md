@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), and `recentSale` + `serviceArea.managedAreas` (studio#5) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
+**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), `recentSale` + `serviceArea.managedAreas` (studio#5), and rental-application PDFs + `payRentDetails` on `siteSettings` (studio#6) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
 
 ## Conventions
 
@@ -103,6 +103,10 @@ Fixed `_id: "siteSettings"`, pinned in Structure (no create-new path). Fields, g
 | dutiesOwedFormUrl | url | NRED Form 525 (real link, verified) |
 | socialLinks | object | facebook/instagram/youtube/linkedin — optional, not yet seeded |
 | buildiumOwnerPortalUrl / buildiumTenantPortalUrl | url | **placeholder** — no real Buildium links yet |
+| rentalApplicationPdfEn / rentalApplicationPdfEs | file | **added studio#6** — two named file fields (not a localized-file abstraction: the i18n plugin doesn't register `file` as a field type, and two obviously-named fields are simpler for Jessica than an array UI for just two languages). CMS-uploadable so she can replace the application without a deploy. Text-based/selectable placeholder PDFs seeded. |
+| payRentDetails | object | **added studio#6, closes a CONTENT-MODEL gap** — `{zelleHandle, checkPayee, checkMailingAddress (street/suite/city/state/zip), dueDay, gracePeriodDays, lateFeePolicy (`internationalizedArrayText`, **localized EN/ES**)}`. Structured (not one text blob) so the site renders each piece individually. `zelleHandle`/real `checkMailingAddress` are PRD §25 open items — seeded with clearly-flagged placeholders (`checkMailingAddress` currently mirrors `officeAddress` as a stand-in). |
+
+**Why tenant resources live here, not a dedicated `tenantResources` doc:** there's only ever one of each (same true-singleton shape as everything else in this file), and Jessica already knows to look in Site Settings for "things that apply everywhere" — see `schemaTypes/siteSettings.ts`'s header for the full reasoning.
 
 Seeded in `../studio-lvhomesbygigi/seed/seed.ndjson` per ADR 0004. i18n foundation (locales `en`+`es`) lives in `sanity.config.ts`: `sanity-plugin-internationalized-array` (field-level: `internationalizedArrayString`/`Text`/`SimpleBlockContent` — the last backed by the `simpleBlockContent` type in `schemaTypes/objects/simpleBlockContent.ts`) + `@sanity/document-internationalization` (document-level, currently wired to `['homePage']`).
 

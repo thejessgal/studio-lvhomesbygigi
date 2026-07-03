@@ -41,7 +41,7 @@ Use the **Vision** tool inside the running Studio to prototype GROQ before wirin
 ```
 schemaTypes/
   index.ts               # aggregates all types into the `schemaTypes` array
-  siteSettings.ts        # singleton — compliance footer, contact, licenses, portals
+  siteSettings.ts        # singleton — compliance footer, contact, licenses, portals, rental application PDFs, pay-rent details
   serviceArea.ts         # singleton — zip list + named regions + managedAreas (single source of truth)
   pricingSheet.ts        # 12 docs — propertyType × furnished × language
   listing.ts             # rentals + for-sale shared template
@@ -53,6 +53,7 @@ structure/
   index.ts               # Structure resolver — pins siteSettings + serviceArea as singletons
 scripts/
   generate-placeholder-pdfs.ts  # regenerates the 12 seed/assets/*.pdf pricing-sheet placeholders
+  generate-rental-application-pdfs.ts  # regenerates the 2 seed/assets/rental-application-*.pdf placeholders
 ```
 
 Define each document/object type with `defineType` + `defineField`, export it from its own file, and register it in `index.ts`. i18n plugins (`sanity-plugin-internationalized-array`, `@sanity/document-internationalization`) are configured in `sanity.config.ts` per ADR 0002.
