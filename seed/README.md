@@ -6,7 +6,12 @@ the schema shipped in the same commit.
 
 ## Contents
 
-- `seed.ndjson` — `siteSettings` (fixed `_id: "siteSettings"`).
+- `seed.ndjson` — `siteSettings` (fixed `_id: "siteSettings"`), `serviceArea` (fixed
+  `_id: "serviceArea"`), and 12 `pricingSheet` docs (deterministic
+  `_id: pricingSheet-<propertyType>-<furnished|unfurnished>-<language>`).
+- `assets/*.pdf` — the 12 placeholder pricing PDFs referenced by the `pricingSheet` docs via
+  `_sanityAsset: "file@file://./assets/<name>.pdf"`. Regenerate with
+  `bun run scripts/generate-placeholder-pdfs.ts` (real, selectable text — not scanned images).
 
 ## Consuming this seed
 
@@ -29,3 +34,6 @@ Flagged in `<scratchpad>/team/placeholders.md`:
 - `buildiumOwnerPortalUrl` / `buildiumTenantPortalUrl` — placeholder URLs; no real Buildium
   portal links exist yet (no production credentials this run — charter override #3).
 - `socialLinks` is intentionally omitted from this seed (optional field, no real URLs to seed yet).
+- All 12 `pricingSheet` PDFs (`assets/pricing-*.pdf`) are placeholder pricing content —
+  real, selectable text with a visible PLACEHOLDER banner, not final pricing. Launch-content
+  TODO: replace with Jessica's real pricing before publish.
