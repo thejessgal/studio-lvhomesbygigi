@@ -12,6 +12,11 @@ import {defineField, defineType} from 'sanity'
  * joins a `teamMember` to their license(s) at query time by matching
  * `siteSettings.licenses[].personName == teamMember.name` — so seeded `name` values here
  * must exactly match the corresponding `personName` in `siteSettings.licenses[]`.
+ *
+ * `name`'s validation runs an async, client-query-based check (same pattern as
+ * `pricingSheet`'s duplicate-combo check) that warns — doesn't block — if no
+ * `siteSettings.licenses[]` entry's `personName` matches, since that join silently fails
+ * (renders no license) rather than erroring if the names ever drift apart.
  */
 export const teamMemberType = defineType({
   name: 'teamMember',
@@ -24,7 +29,22 @@ export const teamMemberType = defineType({
       title: 'Name',
       type: 'string',
       description: 'Must exactly match the matching entry\'s `personName` in siteSettings.licenses[].',
-      validation: (rule) => rule.required(),
+      validation: (rule) =>
+        rule
+          .required()
+          .custom(async (name, context) => {
+            if (!name) return true
+            const client = context.getClient({apiVersion: '2026-02-01'})
+            const count = await client.fetch(
+              `count(*[_type == "siteSettings"][0].licenses[personName == $name])`,
+              {name},
+            )
+            return (
+              count > 0 ||
+              'No license entry matches this name; the About page license display joins by exact name.'
+            )
+          })
+          .warning(),
     }),
     defineField({
       name: 'role',
