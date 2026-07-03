@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-labelledby="hjTitle hjDesc">
+  <title id="hjTitle">Placeholder monogram headshot for Jessica</title>
+  <desc id="hjDesc">Abstract placeholder portrait: a warm sand-and-terracotta gradient background with the initial "J" centered, standing in for a real headshot.</desc>
+  <defs>
+    <linearGradient id="bgJ" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4e9de"/>
+      <stop offset="100%" stop-color="#d9b79a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bgJ)"/>
+  <circle cx="400" cy="440" r="230" fill="#ffffff" fill-opacity="0.35"/>
+  <text x="400" y="500" font-family="Georgia, 'Times New Roman', serif" font-size="260" fill="#8a5a3c" text-anchor="middle" dominant-baseline="middle">J</text>
+  <text x="400" y="960" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#8a5a3c" text-anchor="middle" font-weight="bold">PLACEHOLDER — not a real headshot</text>
+</svg>

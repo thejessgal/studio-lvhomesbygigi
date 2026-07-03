@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-labelledby="hgTitle hgDesc">
+  <title id="hgTitle">Placeholder monogram headshot for Gigi</title>
+  <desc id="hgDesc">Abstract placeholder portrait: a warm sage-and-charcoal gradient background with the initial "G" centered, standing in for a real headshot.</desc>
+  <defs>
+    <linearGradient id="bgG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e7ece6"/>
+      <stop offset="100%" stop-color="#9aab97"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bgG)"/>
+  <circle cx="400" cy="440" r="230" fill="#ffffff" fill-opacity="0.35"/>
+  <text x="400" y="500" font-family="Georgia, 'Times New Roman', serif" font-size="260" fill="#3f4a3d" text-anchor="middle" dominant-baseline="middle">G</text>
+  <text x="400" y="960" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#3f4a3d" text-anchor="middle" font-weight="bold">PLACEHOLDER — not a real headshot</text>
+</svg>
