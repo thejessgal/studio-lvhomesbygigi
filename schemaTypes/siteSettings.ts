@@ -6,6 +6,13 @@ import {defineField, defineType} from 'sanity'
  * `structure/index.ts`). Holds the compliance footer, contact numbers, office
  * details, and portal links every page reads. Never duplicate these values
  * elsewhere (CLAUDE.md non-negotiables).
+ *
+ * `licenses[].licenseType` vs `licenses[].licenseTypeLabel`: `licenseType` stays a plain,
+ * stable enum ('Property Management' | 'Sales') for code/filtering — it's not localized on
+ * purpose, so string comparisons keep working regardless of locale. `licenseTypeLabel`
+ * (internationalizedArrayString) is the actual public-facing text; render that, never
+ * `licenseType` directly, on any user-visible surface (QA finding from slice 1 — the footer
+ * was printing the English enum untranslated on the ES site).
  */
 export const siteSettingsType = defineType({
   name: 'siteSettings',
@@ -112,7 +119,17 @@ export const siteSettingsType = defineType({
               name: 'licenseType',
               title: 'License type',
               type: 'string',
+              description:
+                'Internal category, used for logic/filtering — never rendered to visitors directly. See `licenseTypeLabel` for the public-facing text.',
               options: {list: ['Property Management', 'Sales']},
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'licenseTypeLabel',
+              title: 'Public license type label',
+              type: 'internationalizedArrayString',
+              description:
+                'What renders on the public footer (e.g. ES visitors see "Administración de propiedades", not the English `licenseType` value). Localized EN/ES.',
               validation: (rule) => rule.required(),
             }),
             defineField({name: 'licenseNumber', title: 'License number', type: 'string', validation: (rule) => rule.required()}),

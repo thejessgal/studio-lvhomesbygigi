@@ -99,7 +99,7 @@ Fixed `_id: "siteSettings"`, pinned in Structure (no create-new path). Fields, g
 | equalHousingStatement | `internationalizedArrayText` | **localized EN/ES** compliance footer text |
 | independentlyOwnedStatement | `internationalizedArrayText` | **localized EN/ES** — RE/MAX franchise disclosure |
 | brokerageName | string | "RE/MAX Central" |
-| licenses | array(object `license`) | `{personName, licenseType: 'Property Management'\|'Sales', licenseNumber, isPlaceholder}` — one entry per person + license type |
+| licenses | array(object `license`) | `{personName, licenseType: 'Property Management'\|'Sales' (stable enum, code-facing, never rendered directly), licenseTypeLabel (`internationalizedArrayString`, **localized EN/ES**, the public-facing text — QA fix, studio#5), licenseNumber, isPlaceholder}` — one entry per person + license type |
 | dutiesOwedFormUrl | url | NRED Form 525 (real link, verified) |
 | socialLinks | object | facebook/instagram/youtube/linkedin — optional, not yet seeded |
 | buildiumOwnerPortalUrl / buildiumTenantPortalUrl | url | **placeholder** — no real Buildium links yet |
