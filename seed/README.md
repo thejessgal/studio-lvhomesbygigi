@@ -19,6 +19,11 @@ the schema shipped in the same commit.
 - 5 `recentSale` docs (readable seed IDs, same convention as `listing`), sold dates spread
   over the last ~18 months, mixing address-style and neighborhood-only display strings and
   with/without `soldPrice`/`note` to exercise genuine field absence.
+- `siteSettings.rentalApplicationPdfEn` / `Es` — placeholder application PDFs in
+  `assets/rental-application-{en,es}.pdf`. Regenerate with
+  `bun run scripts/generate-rental-application-pdfs.ts`.
+- `siteSettings.payRentDetails` — Zelle handle, check payee/mailing address, due day, grace
+  period, and localized (EN/ES) late-fee policy copy.
 
 ## Consuming this seed
 
@@ -52,3 +57,8 @@ Flagged in `<scratchpad>/team/placeholders.md`:
   stock photos, reused from the `listing` set). `serviceArea.managedAreas`' two extra ZIPs
   (89129, 89131) are illustrative "legacy managed property" examples, not confirmed real
   currently-managed ZIPs — flagged for Jessica/Gigi to confirm the actual list.
+- `payRentDetails.zelleHandle` and `.checkPayee` are placeholder values (real ones are a
+  PRD §25 open item). `checkMailingAddress` currently mirrors the office address as a
+  stand-in — the real check-mailing address may differ (e.g. a PO box) and needs
+  confirmation. Both rental-application PDFs are placeholder content, same standards as the
+  pricing sheets (real, selectable text — not the final application).
