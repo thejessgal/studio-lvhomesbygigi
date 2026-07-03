@@ -14,10 +14,13 @@ export default defineCliConfig({
   },
   /**
    * Auto-generate schema.json + sanity.types.ts on `sanity dev` / `sanity build`.
-   * Cross-repo query typing for the site is wired later — see
-   * ../lvhomesbygigi/docs/adr/0002-i18n.md (TypeGen section).
+   * Cross-repo per ADR 0002 (TypeGen section): schema.json stays local, but the
+   * generated types land in the site repo so it can import them directly.
    */
   typegen: {
     enabled: true,
+    path: '../lvhomesbygigi/src/**/*.{ts,tsx,astro}',
+    schema: 'schema.json',
+    generates: '../lvhomesbygigi/sanity.types.ts',
   },
 })
