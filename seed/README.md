@@ -12,6 +12,10 @@ the schema shipped in the same commit.
 - `assets/*.pdf` — the 12 placeholder pricing PDFs referenced by the `pricingSheet` docs via
   `_sanityAsset: "file@file://./assets/<name>.pdf"`. Regenerate with
   `bun run scripts/generate-placeholder-pdfs.ts` (real, selectable text — not scanned images).
+- 4 `listing` docs (3 rentals + 1 sale, readable seed IDs like `listing-seed-windmere-rental`
+  — ordinary listings get Sanity-generated IDs once created for real; these fixed IDs are a
+  seed-only convenience) with placeholder photos in `assets/*.jpg` + one shared
+  `assets/floorplan-3br-2ba.svg`.
 
 ## Consuming this seed
 
@@ -37,3 +41,7 @@ Flagged in `<scratchpad>/team/placeholders.md`:
 - All 12 `pricingSheet` PDFs (`assets/pricing-*.pdf`) are placeholder pricing content —
   real, selectable text with a visible PLACEHOLDER banner, not final pricing. Launch-content
   TODO: replace with Jessica's real pricing before publish.
+- All 4 `listing` addresses, prices, and bilingual descriptions are invented placeholder
+  content (real free-license stock photos, though — not gray boxes). The
+  `tourUrl` on the Rainbow Ridge listing is a placeholder Matterport-style URL; its
+  `videoUrl` is a real, currently-public YouTube house-tour video used only as a stand-in.
