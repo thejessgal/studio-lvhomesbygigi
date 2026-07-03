@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-labelledby="fpTitle fpDesc">
+  <title id="fpTitle">Sample 3-bedroom, 2-bath floor plan</title>
+  <desc id="fpDesc">Placeholder floor plan: living room and kitchen across the front, two bedrooms and a bathroom on the left, primary bedroom with en-suite bathroom on the right, with a two-car garage.</desc>
+  <rect width="800" height="600" fill="#faf9f6"/>
+  <g fill="none" stroke="#2b2b2b" stroke-width="3">
+    <!-- Exterior walls -->
+    <rect x="40" y="40" width="720" height="520"/>
+    <!-- Garage -->
+    <rect x="40" y="380" width="220" height="180"/>
+    <!-- Bedroom 2 -->
+    <rect x="40" y="40" width="220" height="200"/>
+    <!-- Bedroom 3 -->
+    <rect x="40" y="240" width="220" height="140"/>
+    <!-- Hall bath -->
+    <rect x="260" y="240" width="120" height="140"/>
+    <!-- Living / Kitchen (open) -->
+    <rect x="260" y="40" width="500" height="340"/>
+    <!-- Primary bedroom -->
+    <rect x="500" y="380" width="260" height="180"/>
+    <!-- Primary bath -->
+    <rect x="380" y="380" width="120" height="180"/>
+  </g>
+  <g fill="#2b2b2b" font-family="Helvetica, Arial, sans-serif" font-size="20" text-anchor="middle">
+    <text x="150" y="145">Bedroom 2</text>
+    <text x="150" y="315">Bedroom 3</text>
+    <text x="320" y="315">Bath</text>
+    <text x="150" y="475">Garage</text>
+    <text x="500" y="130">Living Room</text>
+    <text x="500" y="300">Kitchen / Dining</text>
+    <text x="440" y="475">Bath</text>
+    <text x="630" y="475">Primary Bedroom</text>
+  </g>
+  <g fill="#b34a3a" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" text-anchor="middle">
+    <text x="400" y="590">PLACEHOLDER — sample layout, not the actual unit</text>
+  </g>
+</svg>
