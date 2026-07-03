@@ -40,13 +40,18 @@ Use the **Vision** tool inside the running Studio to prototype GROQ before wirin
 
 ```
 schemaTypes/
-  index.ts     # aggregates all types into the `schemaTypes` array
-  postType.ts  # hello-world example — REPLACE with the real model
+  index.ts               # aggregates all types into the `schemaTypes` array
+  siteSettings.ts        # singleton — compliance footer, contact, licenses, portals
+  homePage.ts            # stub — real fields land in studio#8; see file header before extending
+  objects/
+    simpleBlockContent.ts  # Portable Text variant registered with the i18n plugin
+structure/
+  index.ts               # Structure resolver — pins siteSettings as a singleton
 ```
 
-Define each document/object type with `defineType` + `defineField`, export it from its own file, and register it in `index.ts`.
+Define each document/object type with `defineType` + `defineField`, export it from its own file, and register it in `index.ts`. i18n plugins (`sanity-plugin-internationalized-array`, `@sanity/document-internationalization`) are configured in `sanity.config.ts` per ADR 0002.
 
-**Current state:** only the bootstrap `post` type exists. The real content model (see [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)) has not been built yet.
+**Current state:** the bootstrap `post` type is gone. `siteSettings` + the i18n foundation are built (studio#2). The rest of the content model (see [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)) lands in later slices.
 
 ## Content model to build (summary — full spec in [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md))
 

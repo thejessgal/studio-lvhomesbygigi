@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** not yet built. The Studio currently has only the bootstrap `post` type. Delete it once the real model exists.
+**Status:** `siteSettings` + i18n foundation built (studio#2). The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
 
 ## Conventions
 
@@ -53,11 +53,27 @@ One document per `(propertyType, furnished, language)` ⇒ **12 total** (3 prope
 ### testimonial — PRD §18
 `quoteEn` / `quoteEs` · `attribution` · `source` (owner/tenant/google) · `featured` (bool). Manual curation; no live reviews widget in v1.
 
-### siteSettings (singleton) — PRD §13, §15, §17
-Compliance footer content · license numbers · PM phone `702-337-3028` · sales phone `702-271-2074` · lead inbox `pmteam@lasvegashomesbygigi.com` · office address (8921 W. Sahara Ave, Suite A, LV NV 89117) + hours · social links · Buildium owner + tenant portal URLs · Nevada "Duties Owed" form link.
+### siteSettings (singleton) — PRD §13, §15, §17 — **built, studio#2**
+Fixed `_id: "siteSettings"`, pinned in Structure (no create-new path). Fields, grouped in the Studio:
 
-### homepage / featured (singleton) — PRD §5
-Curated featured rentals/sales · hero configuration · owner-section content.
+| Field | Type | Notes |
+|---|---|---|
+| pmPhone / salesPhone | string | `702-337-3028` / `702-271-2074` |
+| leadInboxEmail | string | `pmteam@lasvegashomesbygigi.com` |
+| officeAddress | object | street/suite/city/state/zip — 8921 W. Sahara Ave, Suite A, LV NV 89117 |
+| officeHours | `internationalizedArrayText` | **localized EN/ES** — e.g. "Mon–Fri 9–4 or by appointment" |
+| equalHousingStatement | `internationalizedArrayText` | **localized EN/ES** compliance footer text |
+| independentlyOwnedStatement | `internationalizedArrayText` | **localized EN/ES** — RE/MAX franchise disclosure |
+| brokerageName | string | "RE/MAX Central" |
+| licenses | array(object `license`) | `{personName, licenseType: 'Property Management'\|'Sales', licenseNumber, isPlaceholder}` — one entry per person + license type |
+| dutiesOwedFormUrl | url | NRED Form 525 (real link, verified) |
+| socialLinks | object | facebook/instagram/youtube/linkedin — optional, not yet seeded |
+| buildiumOwnerPortalUrl / buildiumTenantPortalUrl | url | **placeholder** — no real Buildium links yet |
+
+Seeded in `../studio-lvhomesbygigi/seed/seed.ndjson` per ADR 0004. i18n foundation (locales `en`+`es`) lives in `sanity.config.ts`: `sanity-plugin-internationalized-array` (field-level: `internationalizedArrayString`/`Text`/`SimpleBlockContent` — the last backed by the `simpleBlockContent` type in `schemaTypes/objects/simpleBlockContent.ts`) + `@sanity/document-internationalization` (document-level, currently wired to `['homePage']`).
+
+### homepage / featured (singleton) — PRD §5 — **stub only, studio#8 builds it out**
+Curated featured rentals/sales · hero configuration · owner-section content. A minimal `homePage` type (`title` + hidden `language`) exists today (`schemaTypes/homePage.ts`) solely so `@sanity/document-internationalization`'s `schemaTypes` option — which requires at least one real type — has something to target. studio#8 extends this file in place (don't replace it) and adds the localized-singleton structure entry (`homePage-en` / `homePage-es`).
 
 ## Not modeled in v1 (PRD §21)
 No Buildium sync · no MLS/IDX · no online applications/payments · no auth portals · no live reviews widget. Listings are entered manually (~10 min each).
