@@ -44,7 +44,8 @@ export const pricingSheetType = defineType({
       name: 'furnished',
       title: 'Furnished',
       type: 'boolean',
-      description: 'Selects which PDF the wizard attaches — never a qualification input.',
+      description:
+        'Affects which pricing sheet is sent — does not affect whether we service the property.',
       initialValue: false,
       validation: (rule) => rule.required(),
     }),
