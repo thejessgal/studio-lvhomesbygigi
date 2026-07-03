@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** `siteSettings` + i18n foundation built (studio#2). The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
+**Status:** `siteSettings` + i18n foundation (studio#2) and `serviceArea` + `pricingSheet` (studio#3) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
 
 ## Conventions
 
@@ -39,13 +39,35 @@ Shared template; `kind: 'rental' | 'sale'`.
 ### recentSale (sold gallery / credibility wall) — PRD §7, §8
 `hero` image · `addressOrNeighborhood` (editor discretion per entry) · `soldPrice` (optional) · `soldDate` · `noteEn` / `noteEs` (optional). Renders as **specific** pins on the Portfolio Map (closed transactions are public record).
 
-### serviceArea (single source of truth) — PRD §5, §14, CONTEXT.md
-Zip entries (`zip` + `areaLabel`) + named-region copy (EN/ES). Consumed by the Owner Qualification Wizard, the service-area map, and marketing copy. **One document — never duplicate the zip list elsewhere.**
-Current zips: `89117, 89146, 89148, 89135, 89113, 89139, 89118, 89123, 89183, 89044`.
-Named regions: Spring Valley · Mountains Edge · Enterprise / SW Las Vegas · Summerlin South · Inspirada-area Henderson (**89044 only**).
+### serviceArea (single source of truth) — PRD §5, §14, CONTEXT.md — **built + seeded, studio#3**
+Fixed `_id: "serviceArea"`, pinned in Structure. Two **independent** lists (deliberately not
+foreign-keyed — see below):
 
-### pricingSheet — PRD §5, CONTEXT.md
-One document per `(propertyType, furnished, language)` ⇒ **12 total** (3 property types × 2 furnished states × 2 languages). Fields: `propertyType` (condo/townhouse/single-family) · `furnished` (bool) · `language` (en/es) · `pdf` (file). The wizard selects the matching sheet and emails it. `furnished` selects the PDF only — it is not a qualification input.
+| Field | Type | Notes |
+|---|---|---|
+| zipEntries | array(object `zipEntry`) | `{zip, areaLabel}` — `areaLabel` is the PRD §5 per-zip "Area" table value **verbatim** (`docs/PRD.md:104-115`), plain string, not localized |
+| namedRegions | array(object `namedRegion`) | `{name, displayName}` — `name` is an editor-only internal label; `displayName` is `internationalizedArrayString` (**localized EN/ES**), the public-facing name |
+
+**PRD gap, surfaced not silently resolved:** the PRD's per-zip Area labels (10 zips) are
+compound/overlapping (e.g. "Spring Valley / Mountains Edge") and do **not** reduce 1:1 to the
+PRD's separate 5 canonical "named areas (display to user)" list. Rather than invent a mapping
+the PRD doesn't specify, `zipEntries` and `namedRegions` are seeded as two independent lists;
+`zipEntries[].areaLabel` is free text, not constrained to the 5 `namedRegions[].name` values.
+Current zips: `89117, 89146, 89148, 89135, 89113, 89139, 89118, 89123, 89183, 89044`.
+Named regions (5): Spring Valley · Mountains Edge · Enterprise / Southwest Las Vegas ·
+Summerlin South · Henderson (Inspirada area — **89044 only**; `displayName` reads "select
+areas of Henderson" / "zonas selectas de Henderson", never bare "Henderson", per PRD §8).
+
+### pricingSheet — PRD §5, CONTEXT.md — **built + seeded, studio#3**
+One document per `(propertyType, furnished, language)` ⇒ **12 total** (3 property types × 2 furnished states × 2 languages). Fields: `propertyType` (condo/townhouse/single-family, radio) · `furnished` (bool) · `language` (en/es, radio) · `pdf` (file, `application/pdf`, required). The wizard selects the matching sheet and emails it. `furnished` selects the PDF only — it is not a qualification input.
+Duplicate-combo prevention is two-layered: (1) seeded docs use deterministic
+`_id: pricingSheet-<propertyType>-<furnished|unfurnished>-<language>`, so following the
+convention makes duplicates structurally impossible; (2) the `language` field also runs an
+async client-query validation (`count()` of other docs sharing the same combo) as a
+belt-and-suspenders check against an editor creating a second doc via the generic "Create
+new" path with a random `_id`. All 12 placeholder PDFs are real, selectable text (generated
+by `scripts/generate-placeholder-pdfs.ts`, committed) — not scanned images — with a visible
+PLACEHOLDER banner; real pricing content is a launch-content TODO.
 
 ### teamMember — PRD §3, §13
 `name` · `role` · `headshot` (alt text) · `bioEn` / `bioEs` · `licenseNumbers` · `phone` / `email` · `lane` (PM vs sales — drives listing agent + lead routing).

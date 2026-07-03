@@ -42,16 +42,20 @@ Use the **Vision** tool inside the running Studio to prototype GROQ before wirin
 schemaTypes/
   index.ts               # aggregates all types into the `schemaTypes` array
   siteSettings.ts        # singleton — compliance footer, contact, licenses, portals
+  serviceArea.ts         # singleton — zip list + named regions (single source of truth)
+  pricingSheet.ts        # 12 docs — propertyType × furnished × language
   homePage.ts            # stub — real fields land in studio#8; see file header before extending
   objects/
     simpleBlockContent.ts  # Portable Text variant registered with the i18n plugin
 structure/
-  index.ts               # Structure resolver — pins siteSettings as a singleton
+  index.ts               # Structure resolver — pins siteSettings + serviceArea as singletons
+scripts/
+  generate-placeholder-pdfs.ts  # regenerates the 12 seed/assets/*.pdf pricing-sheet placeholders
 ```
 
 Define each document/object type with `defineType` + `defineField`, export it from its own file, and register it in `index.ts`. i18n plugins (`sanity-plugin-internationalized-array`, `@sanity/document-internationalization`) are configured in `sanity.config.ts` per ADR 0002.
 
-**Current state:** the bootstrap `post` type is gone. `siteSettings` + the i18n foundation are built (studio#2). The rest of the content model (see [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)) lands in later slices.
+**Current state:** the bootstrap `post` type is gone. `siteSettings` + the i18n foundation (studio#2) and `serviceArea` + `pricingSheet` (studio#3) are built and seeded. The rest of the content model (see [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)) lands in later slices.
 
 ## Content model to build (summary — full spec in [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md))
 
