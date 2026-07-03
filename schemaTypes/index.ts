@@ -5,6 +5,8 @@ import {pricingSheetType} from './pricingSheet'
 import {recentSaleType} from './recentSale'
 import {serviceAreaType} from './serviceArea'
 import {siteSettingsType} from './siteSettings'
+import {teamMemberType} from './teamMember'
+import {testimonialType} from './testimonial'
 
 export const schemaTypes = [
   siteSettingsType,
@@ -12,6 +14,8 @@ export const schemaTypes = [
   pricingSheetType,
   listingType,
   recentSaleType,
+  teamMemberType,
+  testimonialType,
   homePageType,
   simpleBlockContentType,
 ]
