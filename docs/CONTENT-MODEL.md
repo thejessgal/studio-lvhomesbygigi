@@ -2,7 +2,7 @@
 
 Derived from `../lvhomesbygigi/docs/PRD.md` (canonical) and `../lvhomesbygigi/CONTEXT.md`. This is the build spec for `schemaTypes/`. **When the PRD and this doc disagree, the PRD wins — then fix this doc.**
 
-**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), and `listing` (studio#4) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
+**Status:** `siteSettings` + i18n foundation (studio#2), `serviceArea` + `pricingSheet` (studio#3), `listing` (studio#4), and `recentSale` + `serviceArea.managedAreas` (studio#5) built + seeded. The bootstrap `post` type is gone. Remaining types land in later slices per the parent PRD's build order.
 
 ## Conventions
 
@@ -47,8 +47,8 @@ Shared template; `kind: 'rental' | 'sale'`.
   hitting a geocoding API on publish) is a real nice-to-have but no such automation exists —
   deferred, not built.
 
-### recentSale (sold gallery / credibility wall) — PRD §7, §8
-`hero` image · `addressOrNeighborhood` (editor discretion per entry) · `soldPrice` (optional) · `soldDate` · `noteEn` / `noteEs` (optional). Renders as **specific** pins on the Portfolio Map (closed transactions are public record).
+### recentSale (sold gallery / credibility wall) — PRD §7, §8 — **built + seeded, studio#5**
+`hero` image (alt required) · `addressOrNeighborhood` (one display string, editor discretion per entry) · `soldPrice` (optional) · `soldDate` (required) · `note` (`internationalizedArrayText`, **localized EN/ES**, optional) · `coordinates` (geopoint, **required** — unlike `listing`, sold pins are address-precise by design since closed transactions are public record, PRD §8). Renders as **specific** pins on the Portfolio Map.
 
 ### serviceArea (single source of truth) — PRD §5, §14, CONTEXT.md — **built + seeded, studio#3**
 Fixed `_id: "serviceArea"`, pinned in Structure. Two **independent** lists (deliberately not
@@ -56,8 +56,9 @@ foreign-keyed — see below):
 
 | Field | Type | Notes |
 |---|---|---|
-| zipEntries | array(object `zipEntry`) | `{zip, areaLabel}` — `areaLabel` is the PRD §5 per-zip "Area" table value **verbatim** (`docs/PRD.md:104-115`), plain string, not localized |
+| zipEntries | array(object `zipEntry`) | `{zip, areaLabel}` — `areaLabel` is the PRD §5 per-zip "Area" table value (`docs/PRD.md:104-115`), now `internationalizedArrayString` (**localized EN/ES**, changed studio#5 — may surface on the service-area map for ES visitors, not just in the Studio) |
 | namedRegions | array(object `namedRegion`) | `{name, displayName}` — `name` is an editor-only internal label; `displayName` is `internationalizedArrayString` (**localized EN/ES**), the public-facing name |
+| managedAreas | array(string) | **studio#5, closes a PRD §8 gap** — bare ZIPs (validated 5-digit) used only to shade currently-managed properties on the Portfolio Map. Deliberately NOT foreign-keyed to `zipEntries`; may include ZIPs outside the serviced list (legacy managed properties predating the serviced-area definition, per CONTEXT.md). **Never stores a property address** — shading only. |
 
 **PRD gap, surfaced not silently resolved:** the PRD's per-zip Area labels (10 zips) are
 compound/overlapping (e.g. "Spring Valley / Mountains Edge") and do **not** reduce 1:1 to the

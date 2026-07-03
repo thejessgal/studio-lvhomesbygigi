@@ -42,9 +42,10 @@ Use the **Vision** tool inside the running Studio to prototype GROQ before wirin
 schemaTypes/
   index.ts               # aggregates all types into the `schemaTypes` array
   siteSettings.ts        # singleton — compliance footer, contact, licenses, portals
-  serviceArea.ts         # singleton — zip list + named regions (single source of truth)
+  serviceArea.ts         # singleton — zip list + named regions + managedAreas (single source of truth)
   pricingSheet.ts        # 12 docs — propertyType × furnished × language
   listing.ts             # rentals + for-sale shared template
+  recentSale.ts          # sold gallery — address-precise map pins
   homePage.ts            # stub — real fields land in studio#8; see file header before extending
   objects/
     simpleBlockContent.ts  # Portable Text variant registered with the i18n plugin
